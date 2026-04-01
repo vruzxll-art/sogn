@@ -56,14 +56,17 @@ class ReviewView(discord.ui.View):
         await interaction.message.edit(embed=embed, view=None)
         await interaction.response.send_message("Application denied.", ephemeral=True)
 
-# ===== MODAL =====
+# ===== MODAL (FIXED: 5 FIELDS ONLY) =====
 class RegistrationModal(discord.ui.Modal, title="📋 Member Application"):
     roblox_username = discord.ui.TextInput(label="Roblox Username", required=True)
     display_name = discord.ui.TextInput(label="Display Name", required=True)
     timezone = discord.ui.TextInput(label="Timezone", required=True)
     availability = discord.ui.TextInput(label="Availability (e.g. Weekends 3-6PM UTC)", required=True)
-    account_age = discord.ui.TextInput(label="Account Age (13+ / <13)", required=True)
-    pronouns = discord.ui.TextInput(label="Pronouns (Optional)", required=False)
+    extra_info = discord.ui.TextInput(
+        label="Extra Info (Age Group + Pronouns)",
+        placeholder="Example: 13+, he/him",
+        required=False
+    )
 
     async def on_submit(self, interaction: discord.Interaction):
         admin_channel = bot.get_channel(ADMIN_CHANNEL_ID)
@@ -78,13 +81,12 @@ class RegistrationModal(discord.ui.Modal, title="📋 Member Application"):
         embed.add_field(name="Display Name", value=self.display_name.value, inline=True)
         embed.add_field(name="Timezone", value=self.timezone.value, inline=True)
         embed.add_field(name="Availability", value=self.availability.value, inline=False)
-        embed.add_field(name="Account Age", value=self.account_age.value, inline=True)
-        embed.add_field(name="Pronouns", value=self.pronouns.value or "Not provided", inline=True)
+        embed.add_field(name="Extra Info", value=self.extra_info.value or "Not provided", inline=False)
 
         await admin_channel.send(embed=embed, view=ReviewView())
         await interaction.response.send_message("✅ Application submitted!", ephemeral=True)
 
-# ===== BUTTON =====
+# ===== REGISTER BUTTON =====
 class RegisterView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -102,7 +104,7 @@ async def setup_register(interaction: discord.Interaction):
         color=discord.Color.blue()
     )
 
-    await interaction.response.send_message("⏳ Setting up...", ephemeral=True)
+    await interaction.response.send_message("✅ Panel sent!", ephemeral=True)
     await interaction.channel.send(embed=embed, view=RegisterView())
 
 # ===== READY =====
