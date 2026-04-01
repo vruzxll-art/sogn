@@ -69,12 +69,15 @@ class RegisterView(discord.ui.View):
     async def register_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(RegistrationModal())
 
-# -------- SLASH COMMAND --------
+# -------- SLASH COMMAND (FIXED) --------
 @bot.tree.command(name="setup_register", description="Send the registration button", guild=discord.Object(id=GUILD_ID))
 async def setup_register(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)  # ✅ FIX
+
     view = RegisterView()
     await interaction.channel.send("Click below to register:", view=view)
-    await interaction.response.send_message("✅ Registration system deployed.", ephemeral=True)
+
+    await interaction.followup.send("✅ Registration system deployed.", ephemeral=True)
 
 # -------- READY --------
 @bot.event
